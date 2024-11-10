@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RailTrain</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome (optional) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <link rel="shortcut icon" href="/assets/images/logo.png" type="image/x-icon">
+  <link rel="icon" href="/assets/images/logo.png" type="image/x-icon">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="./assets/css/styles.css"> <!-- Link to your custom CSS -->
+</head>
+
+<body>
+
+  <header class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <!-- Brand Logo -->
+      <a class="navbar-brand" href="/">
+         <img src="./assets/images/logo.png" class="brand-logo" />
+        <strong >RailTrain</strong>
+      </a>
+
+      <!-- Navbar Toggler for Mobile -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Navbar Content -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link active" href="/">
+            <i class="fa fa-home"></i>
+            Home
+          </a></li>
+          
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="trainsDropdown" data-bs-toggle="dropdown"><i
+                class="fas fa-train"></i> Trains</a>
+            <ul class="dropdown-menu" aria-labelledby="trainsDropdown">
+              <li><a class="dropdown-item" href="/arrival-departure">Arrivals & Departures</a></li>
+              <li><a class="dropdown-item" href="/train-seat-availability">Seat Availability</a></li>
+              <li><a class="dropdown-item" href="/trains/">Trains between stations</a></li>
+              <li><a class="dropdown-item" href="/special-trains">Special Trains</a></li>
+              <li><a class="dropdown-item" href="/diverted-trains">Diverted Trains</a></li>
+              <li><a class="dropdown-item" href="/cancelled-trains">Cancelled Trains</a></li>
+              <li><a class="dropdown-item" href="/partially-cancelled-trains">Partially Cancelled Trains</a></li>
+              <li><a class="dropdown-item" href="/train/">Train Information</a></li>
+            </ul>
+          </li>
+
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="loginRegisterDropdown"
+              data-bs-toggle="dropdown">
+              <i class="fa fa-sign-in"></i>
+              Login</a>
+            <ul class="dropdown-menu" aria-labelledby="loginRegisterDropdown">
+              <li><a class="dropdown-item" href="#modal-login" data-toggle="modal" onclick="Login_Show();">Login</a>
+              </li>
+              <li><a class="dropdown-item" href="#modal-register" data-toggle="modal"
+                  onclick="Register_Show();">Register</a></li>
+            </ul>
+          </li>
+          
+        </ul>
+
+        <!-- Right-side Form (Desktop) -->
+        <form class="d-none d-lg-flex navbar-form" role="search">
+          <div class="form-group me-3">
+            <div class="input-group">
+              <input type="text" class="form-control form-control-sm" placeholder="Search Trains">
+              <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal"
+                data-target="#modal-msg">Go</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-group">
+              <input type="text" class="form-control form-control-sm" maxlength="10" placeholder="Check PNR Status">
+              <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#modal-msg">Check
+                PNR</button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Right-side Form (Mobile) -->
+        <form class="d-lg-none navbar-form mt-3" role="search">
+          <div class="form-group mb-2">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search Trains">
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-msg">Go</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-group">
+              <input type="text" class="form-control" maxlength="10" placeholder="Check PNR Status">
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-msg">Check
+                PNR</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <!-- Secondary Navbar with Train Search Form -->
+  <div class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <form class="d-flex flex-wrap" role="search">
+        <div class="form-group me-2 mb-2"><input type="text" class="form-control form-control-sm" placeholder="From"
+            id="fromstn"></div>
+        <a title="Interchange Stations" class="me-2 mb-2"><i class="fa fa-exchange mt-2"></i></a>
+        <div class="form-group me-2 mb-2"><input type="text" class="form-control form-control-sm" placeholder="To"
+            id="tostn"></div>
+        <div class="form-group me-2 mb-2">
+          <select id="quota" name="quota" class="form-select form-select-sm">
+            <option value="TQ">Tatkal</option>
+            <option value="PT">Premium Tatkal</option>
+            <option value="LD">Ladies</option>
+            <option value="DF">Defence</option>
+            <option value="DP">Duty Pass</option>
+            <option value="FT">Foreign Tourist</option>
+            <option value="SS">Lower Berth</option>
+            <option value="GN" selected>General Quota</option>
+          </select>
+        </div>
+        <div class="form-group me-2 mb-2"><input type="date" placeholder="Select Date"
+            class="form-control form-control-sm" name="date"></div>
+        <div class="form-group mb-2">
+          <a class="btn btn-secondary btn-sm" href="#fromstn" id="search_trains">Show Trains <i
+              class="fa fa-train text-light"></i></a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <section class="py-2">
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col-md-7">
+          <div class="card p-2 min-height-300">
+            <!-- News Header Section -->
+            <div class="d-flex justify-content-between align-items-center bg-light rounded mb-1">
+              <marquee behavior="" direction="">
+                <h6 class="mb-0 fw-bold"> Welcome to <i class="fas fa-train text-info"></i> Indian Railways News </h6>
+              </marquee>
+              <a href="#newsModal" data-bs-toggle="modal" class="text-decoration-none btn btn-secondary btn-sm fs-13">
+                More&#160;News... </a>
+            </div>
+
+            <!-- News List -->
+            <div class="list-group overflow-auto">
+              <!-- Each news item is listed below -->
+              <!-- News Item 1 -->
+              <div class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="#newsModal" data-bs-toggle="modal" class="text-decoration-none fs-13">
+                  पुणे - जबलपुर स्पेशल ट्रेन का विस्तार; अब इस तिथि तक चलेगी ये ट्रेन
+                </a>
+                <div class="btn-group align-items-center">
+                  <button class="btn btn-secondary btn-sm fs-13" data-bs-toggle="modal" data-bs-target="#newsModal">
+                    Read&#160;More...&#160;<span class="border-1 border-end">&#160;</span><i
+                      class="fas fa-eye text-light ms-2"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- News Item 2 -->
+              <div class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="#newsModal" data-bs-toggle="modal" class="text-decoration-none fs-13">
+                  पुणे - जबलपुर स्पेशल ट्रेन का विस्तार; अब इस तिथि तक चलेगी ये ट्रेन
+                </a>
+                <div class="btn-group align-items-center">
+                  <button class="btn btn-secondary btn-sm fs-13" data-bs-toggle="modal" data-bs-target="#newsModal">
+                    Read&#160;More...&#160;<span class="border-1 border-end">&#160;</span><i
+                      class="fas fa-eye text-light ms-2"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- Additional news items follow the same structure -->
+              <br />
+              <!-- click to display -->
+              <div class="table-responsive fs-12 table-thead-back-info">
+                <table class="table table-bordered  ">
+                  <thead class="table-info">
+                    <tr>
+                      <th>Train</th>
+                      <th>   Train Name</th>
+                      <th>From</th>
+                      <th>Dep</th>
+                      <th>To</th>
+                      <th>Arr</th>
+                      <th>Travel</th>
+                      <th>M</th>
+                      <th>T</th>
+                      <th>W</th>
+                      <th>T</th>
+                      <th>F</th>
+                      <th>S</th>
+                      <th>S</th>
+                      <th>1A</th>
+                      <th>2A</th>
+                      <th>3A</th>
+                      <th>SL</th>
+                      <th>CC</th>
+                      <th>2S</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>12701</td>
+                      <td>
+                        <a data-bs-toggle="modal" href="#trainnameModal" > HUSSAINSAGAR EXP</a> <a href="#"  ><i
+                            class="fa fa-calendar text-success"></i></a>
+                      </td>
+                      <td>PUNE</td>
+                      <td>01:25 AM</td>
+                      <td>HYB</td>
+                      <td>12:05 PM</td>
+                      <td>10:40</td>
+                      <td>Y</td>
+                      <td>Y</td>
+                      <td>Y</td>
+                      <td>Y</td>
+                      <td>Y</td>
+                      <td>Y</td>
+                      <td>Y</td>
+                      <td>-</td>
+                      <td>2A</td>
+                      <td>3A</td>
+                      <td>SL</td>
+                      <td>-</td>
+                      <td>-</td>
+                    </tr>
+                    <tr>
+                      <td>22732</td>
+                      <td>  <a data-bs-toggle="modal" href="#trainnameModal" >HYDERABAD EXP</a> <a href="#"><i
+                            class="fa fa-calendar text-success"></i></a></td>
+                      <td>PUNE</td>
+                      <td>06:10 PM</td>
+                      <td>HYB</td>
+                      <td>04:30 AM</td>
+                      <td>10:20</td>
+                      <td>Y</td>
+                      <td>Y</td>
+                      <td>Y</td>
+                      <td>Y</td>
+                      <td>Y</td>
+                      <td>Y</td>
+                      <td>Y</td>
+                      <td>-</td>
+                      <td>2A</td>
+                      <td>3A</td>
+                      <td>SL</td>
+                      <td>-</td>
+                      <td>-</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal for news details -->
+        <div class="modal fade" id="newsModal" tabindex="-1" aria-labelledby="newsModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="newsModalLabel">News Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p>Details of the selected news item will go here.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab section with PNR, Running Status, and other options -->
+        <div class="col-md-5">
+          <div class="card p-2 min-height-300">
+            <nav>
+              <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <button class="nav-link active" id="nav-ad-tab" data-bs-toggle="tab" data-bs-target="#nav-ad"
+                  type="button" role="tab" aria-controls="nav-ad" aria-selected="true">Ad</button>
+                <button class="nav-link" id="nav-options-tab" data-bs-toggle="tab" data-bs-target="#nav-options"
+                  type="button" role="tab" aria-controls="nav-options" aria-selected="false">Options</button>
+                <button class="nav-link" id="nav-pnr-status-tab" data-bs-toggle="tab" data-bs-target="#nav-pnr-status"
+                  type="button" role="tab" aria-controls="nav-pnr-status" aria-selected="false">PNR Status</button>
+                <button class="nav-link" id="nav-running-status-tab" data-bs-toggle="tab"
+                  data-bs-target="#nav-running-status" type="button" role="tab" aria-controls="nav-running-status"
+                  aria-selected="false">Running Status</button>
+              </div>
+            </nav>
+            <div class="tab-content p-3" id="nav-tabContent">
+              <div class="tab-pane fade show active" id="nav-ad" role="tabpanel" aria-labelledby="nav-ad-tab"> Ad</div>
+              <div class="tab-pane fade" id="nav-options" role="tabpanel" aria-labelledby="nav-options-tab">
+                <div>
+                  <a href="#" class="btn btn-sm btn-info text-white fs-13 mb-1 p-1">Availability in Trains PUNE to HYB
+                    on 09, Nov</a>
+                  <a href="#" class="btn btn-sm btn-info text-white fs-13 mb-1 p-1">Availability in Trains PUNE to HYB
+                    on 22, Nov</a>
+                </div>
+                <div class="table-responsive table-thead-back-info fs-13">
+                  <table class="table table-striped  table-bordered">
+                    <thead>
+                      <tr>
+                        <th colspan="3">Classes</th>
+                      </tr>
+                    </thead>
+                    <tbody class="text-left">
+                      <tr>
+                        <td><label class="checkbox-inline">
+                            <input type="checkbox"> 1st AC
+                          </label></td>
+                        <td><label class="checkbox-inline">
+                            <input type="checkbox"> 2nd AC
+                          </label></td>
+                        <td>
+                          <label class="checkbox-inline">
+                            <input type="checkbox"> 3rd AC
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><label class="checkbox-inline">
+                            <input type="checkbox"> Sleeper
+                          </label></td>
+                        <td><label class="checkbox-inline">
+                            <input type="checkbox"> Chair Car
+                          </label></td>
+                        <td><label class="checkbox-inline">
+                            <input type="checkbox"> 2nd Sitting
+                          </label>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="row table-thead-back-info fs-13">
+                  <div class="col-sm-6">
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Departure</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><input type="radio"> PUNE</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="col-sm-6">
+                    <table class="table   table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Arrival</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><input type="radio"> HYB</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+
+
+              </div>
+              <div class="tab-pane fade" id="nav-pnr-status" role="tabpanel" aria-labelledby="nav-pnr-status-tab">
+                <div class="form-group">
+                  <div class="input-group">
+                    <input type="text" class="form-control form-control-sm" maxlength="10"
+                      placeholder="Check PNR Status">
+                    <button type="button" class="btn btn-sm btn-secondary">Check PNR</button>
+                  </div>
+                </div>
+                <div class="text-center">
+                  <button class="btn btn-light btn-sm p-1 m-1">Show History</button>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="nav-running-status" role="tabpanel"
+                aria-labelledby="nav-running-status-tab">
+                <div class="form-group">
+                  <input type="text" class="form-control form-control-sm mb-1" maxlength="10"
+                    placeholder="Enter Train Name / Number">
+                  <div class="input-group">
+                    <select class="form-select form-select-sm">
+                      <option value="2024-11-06">06th of November 2024</option>
+                      <option value="2024-11-07">07th of November 2024</option>
+                      <option value="2024-11-08">08th of November 2024 (Yesterday)</option>
+                      <option value="2024-11-09" selected>09th of November 2024 (Today)</option>
+                      <option value="2024-11-10">10th of November 2024 (Tomorrow)</option>
+                    </select>
+                    <button type="button" class="btn btn-sm btn-secondary">Check Status</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!--  -->
+  <section  >
+    <div class="container-fluid">
+      <div class="row">
+        <!-- PNR Status Section -->
+        <div class="col-md-7">
+          <div class="card p-2 min-height-300">
+            <div class="row">
+              <!-- PNR Status Check Card -->
+              <div class="col-md-6">
+                <div class="card p-2">
+                  <h6 class="text-center py-2">Check <span class="fw-bold"> PNR Status</span></h6>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <input type="text" class="form-control form-control-sm" maxlength="10"
+                        placeholder="Check PNR Number">
+                      <button type="button" class="btn btn-sm btn-secondary">Check PNR</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Running Status Check Card -->
+              <div class="col-md-6">
+                <div class="card p-2">
+                  <h6 class="text-center py-2">Train <span class="fw-bold"> Running Status</span></h6>
+                  <div class="form-group">
+                    <input type="text" class="form-control form-control-sm mb-1" maxlength="10"
+                      placeholder="Enter Train Name / Number">
+                    <div class="input-group">
+                      <select class="form-select form-select-sm">
+                        <option value="2024-11-06">06th of November 2024</option>
+                        <option value="2024-11-07">07th of November 2024</option>
+                        <option value="2024-11-08">08th of November 2024 (Yesterday)</option>
+                        <option value="2024-11-09" selected>09th of November 2024 (Today)</option>
+                        <option value="2024-11-10">10th of November 2024 (Tomorrow)</option>
+                      </select>
+                      <button type="button" class="btn btn-sm btn-secondary">Check Status</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--  -->
+            </div>
+          </div>
+        </div>
+        <!-- Blog Section -->
+        <div class="col-md-5">
+          <div class="card p-2 min-height-300">
+            <h6 class="fw-bold">Blog Latest News </h6>
+            <!-- Blog Marquee -->
+            <marquee behavior="scroll" direction="up" scrollamount="2" scrolldelay="100">
+              <div class="border-blog-1">
+                <a href="#"> Full electrification of Indian Railways Good or Bad?</a>
+              </div>
+              <div class="border-blog-1">
+                <a href="#"> Upcoming New Colour Scheme of Indian Railway coaches; take a look</a>
+              </div>
+              <div class="border-blog-1">
+                <a href="#"> Railway does not want you to use these unauthorized food services</a>
+              </div>
+              <div class="border-blog-1">
+                <a href="#"> जाने कैसे रेलवे करता है 1500 करोड़ रूपए की आय सालाना वो भ...</a>
+              </div>
+              <div class="border-blog-1">
+                <a href="#"> Bus vs Train: Trains are losing; Indian Railway is losing</a>
+              </div>
+              <div class="border-blog-1">
+                <a href="#"> These are the Cleanest and Dirtiest stations in India</a>
+              </div>
+              <div class="border-blog-1">
+                <a href="#"> Do you know we still travel at the speed of the British Era in Railways?</a>
+              </div>
+              <div class="border-blog-1">
+                <a href="#"> One such step by Indian Railways that needs applause</a>
+              </div>
+              <div class="border-blog-1">
+                <a href="#"> 5 Major Accidents in the History of Indian Railways</a>
+              </div>
+              <div class="border-blog-1">
+                <a href="#"> Privatisation of Indian Railways – To Be or Not To Be </a>
+              </div>
+            </marquee>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--  -->
+<!--  -->
+  <!-- Footer Section -->
+<footer class="py-1">
+  <div class="container-fluid">
+  <div class="row">
+  
+  <div class="col-md-8 text-start"> 
+    <span>2014-24</span> © <a href="/">RailTrain</a> All Rights Reserved.
+  
+  </div>
+  <div class="col-md-4 text-end">
+    <a data-bs-toggle="modal" href="#careerModal">Career</a>  
+   
+  </div>
+</div>
+</div>
+</footer>
+<!--  -->
+<a class="feedback" data-bs-toggle="modal" href="#feedbackModal">Feedback</a>
+
+
+
+<!--  -->
+<div class="modal fade" id="trainnameModal" tabindex="-1" aria-labelledby="trainnameModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+     
+      <h6 class="modal-title fw-bold">Hussainsagar Express (12701) Route &amp; Time Table</h6>
+       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+    </div>
+    <div class="modal-body">
+      <table class="table table-striped table-bordered text-center">
+        <thead>
+          <tr class="table-info">
+            <td>Train</td>
+            <td>Source</td>
+            <td>Destination</td>
+            <td>Days Run from C Shivaji Mah T</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>12701 - Hussainsagar Express</td>
+            <td>C Shivaji Mah T (CSMT)</td>
+            <td>Hyderabad (HYB)</td>
+            <td class="text-success">Mon Tue Wed Fri Sat Sun</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class="table table-striped table-bordered text-center">
+        <thead>
+          <tr class="table-info">
+            <td>#</td>
+            <td>Station</td>
+            <td>Arrival</td>
+            <td>Departure</td>
+            <td>Halt</td>
+            <td>Distance</td>
+            <td>Day</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>C Shivaji Mah T (CSMT)</td>
+            <td>09:50 PM</td>
+            <td>09:50 PM</td>
+            <td>0 Mins</td>
+            <td>0 KMs</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Kalyan Jn (KYN)</td>
+            <td>10:37 PM</td>
+            <td>10:40 PM</td>
+            <td>3 Mins</td>
+            <td>53 KMs</td>
+            <td>1</td>
+          </tr>
+          <tr class="table-success">
+            <td>3</td>
+            <td>Pune Jn (PUNE)</td>
+            <td>01:20 AM</td>
+            <td>01:25 AM</td>
+            <td>5 Mins</td>
+            <td>192 KMs</td>
+            <td>2</td>
+          </tr>
+          <!-- Continue with other rows in similar format -->
+          <tr class="table-success">
+            <td>15</td>
+            <td>Hyderabad (HYB)</td>
+            <td>12:05 PM</td>
+            <td>12:05 PM</td>
+            <td>0 Mins</td>
+            <td>794 KMs</td>
+            <td>2</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Career Modal -->
+<div class="modal fade" id="careerModal" tabindex="-1" aria-labelledby="careerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title fw-bold" id="careerModalLabel">Job Openings at RailTrain</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h3>Join the RailTrain TEAM.</h3>
+        <p>We have the following openings in our Pune, Maharashtra location:</p>
+        <ul>
+          <li>Content Writer / Developer</li>
+          <li>iOS Developer</li>
+          <li>Web UI Designer</li>
+          <li>Support Executive</li>
+        </ul>
+        <p>Please send your resume to <b>hr@RailTrain</b> </p>
+      </div>
+       
+    </div>
+  </div>
+</div>
+
+<!-- Feedback Modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title fw-bold" id="feedbackModalLabel">What do you say about the New RailTrain?</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="username" class="form-label">Your Name</label>
+            <input type="text" class="form-control" id="username">
+          </div>
+          <div class="mb-3">
+            <label for="useremail" class="form-label">Your Email</label>
+            <input type="email" class="form-control" id="useremail">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Did you like the New RailEnquiry?</label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="raillike" id="likeyes" value="yes">
+              <label class="form-check-label" for="likeyes">Yes</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="raillike" id="likeno" value="no">
+              <label class="form-check-label" for="likeno">No</label>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="msgsugg" class="form-label">Any Like, Dislike / Suggestions?</label>
+            <textarea class="form-control" id="msgsugg" rows="3"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="regnpass" class="form-label">If not registered with RailTrain, enter a password to signup automatically</label>
+            <input type="password" class="form-control" id="regnpass">
+          </div>
+          <div class="text-end">
+            <button type="button" class="btn btn-secondary btn-sm">Submit</button>
+          </div>
+        </form>
+      </div>
+     
+    </div>
+  </div>
+</div>
+  <!--  -->
+
+
+
+  <!-- Bootstrap 5 JS and Popper.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
